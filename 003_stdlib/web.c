@@ -4,6 +4,13 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+char* malloc_copy(char *input)
+{
+    char *result = malloc(1024);
+    strncpy(result, input, strlen(input));
+    return result;
+}
+
 int add(int a, int b) {
   return a + b;
 }
