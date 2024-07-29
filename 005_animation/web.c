@@ -3,6 +3,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <math.h>
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -129,19 +130,11 @@ void keyboard_action(uint8_t keyCode) {
 int in_ball(int click_x, int click_y) {
 	int x0 = (int)ball_x;
 	int y0 = (int)ball_y;
-	int r = (int)ball_radius;
 
-	for (int y = -r; y <= r; ++y) {
-		for (int x = -r; x <= r; ++x) {
-			if (x*x + y*y <= r*r) {
-				int px = x0 + x;
-				int py = y0 + y;
-
-				if (px == click_x && py == click_y) {
-					return 1;
-				}
-			}
-		}
+	float d = sqrtf(pow(click_x - x0, 2) + pow(click_y - y0, 2));
+	jsprintf("distance: %.2f", d);
+	if(d < ball_radius) {
+		return 1;
 	}
 	return 0;
 }
@@ -153,6 +146,7 @@ void click(int x, int y) {
 	if(y < 0 || y >= WIDTH) {
 		return;
 	}
+
 	if(in_ball(x, y) == 1) {
 		if(ball_color == 0x9399B2FF) {
 			ball_color = 0xF2CDCDFF;
