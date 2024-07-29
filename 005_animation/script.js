@@ -96,6 +96,23 @@ async function init() {
 		return;
 	}
 
+	document.addEventListener('keydown', function(event) {
+		switch (event.key) {
+			case 'ArrowLeft': case 'h':
+				instance.exports.keyboard_action(0);
+			break;
+			case 'ArrowRight': case 'l':
+				instance.exports.keyboard_action(1);
+			break;
+			case 'ArrowUp': case 'k':
+				instance.exports.keyboard_action(2);
+			break;
+			case 'ArrowDown': case 'j':
+				instance.exports.keyboard_action(3);
+			break;
+		}
+	});
+
 	function render() {
 		instance.exports.tick();
 		window.requestAnimationFrame(render);

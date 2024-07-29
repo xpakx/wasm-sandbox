@@ -4,15 +4,12 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-
 #define WIDTH 640
 #define HEIGHT 480
-
-__attribute__((optnone)) 
-void* always_malloc(size_t size)
-{
-    return malloc(size);
-}
+#define LEFT 0
+#define RIGHT 1
+#define UP 2
+#define DOWN 3
 
 __attribute__((import_module("io_wasm"), import_name("jsprintf"))) 
 void js_jsprintf(char* str);
@@ -103,4 +100,29 @@ int init() {
 		return 1;
 	}
 	return 0;
+}
+
+void keyboard_action(uint8_t keyCode) {
+	switch (keyCode) {
+		case LEFT:
+			if(ball_speed_x > 0) {
+				ball_speed_x = -ball_speed_x;
+			}
+			break;
+		case RIGHT:
+			if(ball_speed_x < 0) {
+				ball_speed_x = -ball_speed_x;
+			}
+			break;
+		case UP:
+			if(ball_speed_y > 0) {
+				ball_speed_y = -ball_speed_y;
+			}
+			break;
+		case DOWN:
+			if(ball_speed_y < 0) {
+				ball_speed_y = -ball_speed_y;
+			}
+			break;
+	}
 }
