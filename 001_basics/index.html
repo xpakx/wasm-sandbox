@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+	<title>WASM basics</title>
+	<style>
+	body {
+		background-color: #1e1e2e;
+		color: #cdd6f4;
+	}
+	</style>
+</head>
+<body>
+	4 + 1 = <span id="result">?</span>
+	<script type="module">
+		async function init() {
+		    const { instance } = await WebAssembly.instantiateStreaming(
+		      fetch("./web.wasm")
+		    );
+		    const result = document.getElementById("result");
+		    let res = instance.exports.add(4, 1);
+		    result.textContent = res;
+		  }
+
+		  init();
+	</script>
+</body>
