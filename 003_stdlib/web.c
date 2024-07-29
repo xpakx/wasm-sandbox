@@ -1,9 +1,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <stdarg.h>
-#include <stdio.h>
-
 // to prevent clang from optimizing away malloc at -O3
 __attribute__((optnone)) 
 void* always_malloc(size_t size)
