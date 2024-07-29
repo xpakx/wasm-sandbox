@@ -40,17 +40,23 @@ float ball_speed_y = 1.5f;
 
 uint8_t* pixel_data;
 
-void draw_ball(uint8_t* buffer) {
+void fillPixel(uint8_t* buffer, int index, int color) {
+	buffer[index] = (color >> 24) & 0xFF;
+	buffer[index + 1] = (color >> 16) & 0xFF;
+	buffer[index + 2] = (color >> 8) & 0xFF;
+	buffer[index + 3] = color & 0xFF;
+}
+
+void clearScreen(uint8_t* buffer) {
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
 			int index = (y * WIDTH + x) * 4;
-			buffer[index] = 30;
-			buffer[index + 1] = 30;
-			buffer[index + 2] = 46;
-			buffer[index + 3] = 255;
+			fillPixel(buffer, index, 0X1E1E2EFF);
 		}
 	}
+}
 
+void draw_ball(uint8_t* buffer) {
 	int x0 = (int)ball_x;
 	int y0 = (int)ball_y;
 	int r = (int)ball_radius;
@@ -63,10 +69,7 @@ void draw_ball(uint8_t* buffer) {
 
 				if (px >= 0 && px < WIDTH && py >= 0 && py < HEIGHT) {
 					int index = (py * WIDTH + px) * 4;
-					buffer[index] = 147;     // Red
-					buffer[index + 1] = 153;   // Green
-					buffer[index + 2] = 178;   // Blue
-					buffer[index + 3] = 255; // Alpha
+					fillPixel(buffer, index, 0X9399B2FF);
 				}
 			}
 		}
@@ -87,6 +90,7 @@ void update_ball_position() {
 
 void tick() {
 	update_ball_position();
+	clearScreen(pixel_data);
 	draw_ball(pixel_data);
 	js_draw_canvas((uint32_t)(uintptr_t)pixel_data, WIDTH * HEIGHT * 4);
 }
