@@ -59,17 +59,6 @@ window.onload = () => {
 	init();
 }
 
-function setPixel(x, y, color) {
-	const imageData = ctx.createImageData(1, 1);
-	const data = imageData.data;
-
-	data[0] = (color >> 24) & 0xFF; // R
-	data[1] = (color >> 16) & 0xFF; // G
-	data[2] = (color >> 8) & 0xFF;  // B
-	data[3] = color & 0xFF;         // A
-	ctx.putImageData(imageData, x, y);
-}
-
 async function init() {
 	const memory = new WebAssembly.Memory({ initial: 2 });
 	let io_wasm = {};
@@ -84,7 +73,6 @@ async function init() {
 		const data = new ImageData(imageData, 640, 480);
 		ctx.putImageData(data, 0, 0);
 	}
-	io_wasm.setPixel = setPixel;
 	const { instance } = await WebAssembly.instantiateStreaming(
 		fetch("./web.wasm"),
 		{ env: { memory }, wasi_snapshot_preview1: wasi, io_wasm: io_wasm }

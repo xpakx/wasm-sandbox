@@ -14,9 +14,6 @@
 __attribute__((import_module("io_wasm"), import_name("jsprintf"))) 
 void js_jsprintf(char* str);
 
-__attribute__((import_module("io_wasm"), import_name("setPixel"))) 
-void js_set_pixel(int x, int y, uint32_t color);
-
 __attribute__((import_module("io_wasm"), import_name("drawCanvas"))) 
 void js_draw_canvas(uint32_t ptr, uint32_t length);
 
