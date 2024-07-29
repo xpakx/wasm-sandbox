@@ -54,6 +54,8 @@ let ctx = undefined;
 window.onload = () => {
 	canvas = document.getElementById('canvas');
 	ctx = canvas.getContext('2d');
+	canvas.width = 640;
+	canvas.height = 480;
 	init();
 }
 
@@ -76,6 +78,11 @@ async function init() {
 		const text = decode(view, base);
 		console.log(text);
 		printToElem(text, "#result");
+	}
+	io_wasm.drawCanvas = function(ptr, length) {
+		const imageData = new Uint8ClampedArray(memory.buffer, ptr, length);
+		const data = new ImageData(imageData, 640, 480);
+		ctx.putImageData(data, 0, 0);
 	}
 	io_wasm.setPixel = setPixel;
 	const { instance } = await WebAssembly.instantiateStreaming(
