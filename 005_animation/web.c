@@ -31,6 +31,7 @@ float ball_y = 100.0f;
 float ball_radius = 30.0f;
 float ball_speed_x = 2.0f;
 float ball_speed_y = 1.5f;
+int ball_color = 0X9399B2FF;
 
 uint8_t* pixel_data;
 
@@ -63,7 +64,7 @@ void draw_ball(uint8_t* buffer) {
 
 				if (px >= 0 && px < WIDTH && py >= 0 && py < HEIGHT) {
 					int index = (py * WIDTH + px) * 4;
-					fillPixel(buffer, index, 0X9399B2FF);
+					fillPixel(buffer, index, ball_color);
 				}
 			}
 		}
@@ -90,7 +91,7 @@ void tick() {
 }
 
 int init() {
-	char *text = "WASM animation";
+	char *text = "WASM animation. Use arrows to change direction.";
 	jsprintf("Message from main(): %s", text ? text : "Allocation failed");
 	pixel_data = (uint8_t*)malloc(WIDTH * HEIGHT * 4);
 	if(pixel_data == NULL) {
@@ -121,5 +122,42 @@ void keyboard_action(uint8_t keyCode) {
 				ball_speed_y = -ball_speed_y;
 			}
 			break;
+	}
+}
+
+
+int in_ball(int click_x, int click_y) {
+	int x0 = (int)ball_x;
+	int y0 = (int)ball_y;
+	int r = (int)ball_radius;
+
+	for (int y = -r; y <= r; ++y) {
+		for (int x = -r; x <= r; ++x) {
+			if (x*x + y*y <= r*r) {
+				int px = x0 + x;
+				int py = y0 + y;
+
+				if (px == click_x && py == click_y) {
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+void click(int x, int y) {
+	if(x < 0 || x >= WIDTH) {
+		return;
+	}
+	if(y < 0 || y >= WIDTH) {
+		return;
+	}
+	if(in_ball(x, y) == 1) {
+		if(ball_color == 0x9399B2FF) {
+			ball_color = 0xF2CDCDFF;
+		} else {
+			ball_color = 0x9399B2FF;
+		}
 	}
 }

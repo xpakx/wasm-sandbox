@@ -101,6 +101,15 @@ async function init() {
 		}
 	});
 
+
+	canvas.addEventListener("click", (event) => {
+		const rect = canvas.getBoundingClientRect();
+
+		const mouseX = event.clientX - rect.left;
+		const mouseY = event.clientY - rect.top;
+		instance.exports.click(mouseX, mouseY);
+	});
+
 	function render() {
 		instance.exports.tick();
 		window.requestAnimationFrame(render);
