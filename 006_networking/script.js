@@ -18,6 +18,11 @@ async function init() {
 		.then(pointer => notifyWasm(pointer))
                 .catch(error => console.error('Error fetching data:', error));
 	}
+	io_wasm.sleep = function sleep(ms) {
+		console.log(ms);
+		new Promise(resolve => setTimeout(resolve, ms))
+		.then(() => instance.exports.on_sleep_ended());
+	}
 	io_wasm.jsprintf = function(base) {
 		const view = new Uint8Array(memory.buffer);
 		const text = decode(view, base);
@@ -31,6 +36,10 @@ async function init() {
 
 	document.getElementById("get").addEventListener("click", () => {
 		instance.exports.click();
+	});
+
+	document.getElementById("sleep").addEventListener("click", () => {
+		instance.exports.click_sleep();
 	});
 
 	function saveData(buffer) {
