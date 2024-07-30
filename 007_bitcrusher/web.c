@@ -19,8 +19,6 @@ void jsprintf(const char* format, ...) {
 
 void apply_bitcrusher(float* audio, int length, int bit_depth, int sample_rate_reduction) {
 	float total_q_levels = powf(2, bit_depth);
-	jsprintf("q_levels: %f", total_q_levels);
-	jsprintf("rate reduction: %d", sample_rate_reduction);
 	for (int i = 0; i < length; i++) {
 		// reduce sample rate
 		if(sample_rate_reduction > 1 && i%sample_rate_reduction) {
