@@ -2,17 +2,178 @@
 <head>
 	<title>WASM bitcrusher</title>
 <style>
+:root {
+	--main-bg-color: #181825;
+	--player-bg-color: #1e1e2e;
+	--album-title-color: #cdd6f4;
+	--faded-color: #9399b2;
+	--button-bg-color: #585b70;
+	--button-fg-color: #181825;
+	--track-hover-bg-color: #6c7086;
+	--control-bg-color: #313244;
+	--control-hover-bg-color: #45475a;
+	--progressbar-color: #f2cdcd;
+	--main-text-color: #cdd6f4;
+}
+
 body {
-	background-color: #1e1e2e;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	margin: 0;
+	background-color: var(--main-bg-color);
+	color: var(--main-text-color);
+	font-family: 'Arial', sans-serif;
+}
+
+.plugin {
+	background-color: var(--player-bg-color);
+	border-radius: 10px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	width: 400px;
+	text-align: left;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.details {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.title {
+	font-size: 1.2em;
+	margin: 0;
+	color: var(--album-title-color);
+}
+
+#result {
+	font-size: 0.9em;
+	color: var(--faded-color);
+}
+
+.controls {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 20px;
+}
+
+#current-song {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+#current-song-data {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+#play-pause {
+	padding: 10px 20px;
+	border: none;
+	background-color: var(--control-bg-color);
+	color: white;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+#play-pause:hover {
+	background-color: var(--control-hover-bg-color);
+}
+
+#progress-container {
+	background-color: var(--button-bg-color);
+	border-radius: 5px;
+	flex: 1;
+	height: 10px;
+	margin: 0 10px;
+	cursor: pointer;
+	position: relative;
+}
+
+#progress {
+	background-color: var(--progressbar-color);
+	height: 100%;
+	width: 0;
+	border-radius: 5px;
+}
+
+#current-time,
+#duration {
+	font-size: 0.8em;
+	color: var(--faded-color);
+}
+
+.tags {
+	margin-top: 20px;
+	display: flex;
+	gap: 5px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+button {
+	padding: 10px 20px;
+	font-size: 16px;
 	color: #cdd6f4;
+	background-color: #181825;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+button:hover {
+	background-color: #313244;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+	background-color: #313244;
+}
+
+#audioFileInput {
+	display: none;
 }
 </style>
 </head>
 <body>
-	<div id="result">?</div>
-	<input type="file" id="audioFileInput" accept="audio/*">
-	<audio id="audioPlayer" controls></audio>
-	<button id="button" disabled>apply</button>
-	<button id="playCrushed">crushed</button>
 	<script type="module" src="./script.js"> </script>
+
+	<div class="plugin">
+		<div class="details">
+			<div class="title">Bitcrusher</div>
+			<p id="result">?</p>
+		</div>
+		<div class="controls">
+			<button id="play-pause">⏵</button>
+			<div id="current-song">
+				<div id="current-song-data">
+					<div id="progress-container">
+						<div id="progress"></div>
+					</div>
+					<span id="current-time">0:00</span> / <span id="duration">0:00</span>
+				</div>
+			</div>
+		</div>
+		<div class="tags">
+			<button id="getFile">load</button>
+			<button id="button" disabled>apply</button>
+			<button id="playCrushed">crushed</button>
+		</div>
+	</div>
+
+	<input type="file" id="audioFileInput" accept="audio/*">
+	<audio id="audioPlayer">
+		<source type="audio/mpeg">
+		Your browser does not support the audio element.
+	</audio>
 </body>
+
