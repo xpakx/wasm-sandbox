@@ -13,10 +13,9 @@ async function init() {
 	let io_wasm = {};
 	io_wasm.get = function() {
 		fetch('http://localhost:8001')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('result').innerText = data;
-                })
+                .then(response => response.arrayBuffer())
+		.then(data => saveData(data))
+		.then(pointer => notifyWasm(pointer))
                 .catch(error => console.error('Error fetching data:', error));
 	}
 	io_wasm.jsprintf = function(base) {
@@ -30,9 +29,24 @@ async function init() {
 		{ env: { memory }, wasi_snapshot_preview1: wasi, io_wasm: io_wasm }
 	);
 
-        document.getElementById('get').addEventListener('click', () => {
-		io_wasm.get();
+	document.getElementById("get").addEventListener("click", () => {
+		instance.exports.click();
 	});
+
+	function saveData(buffer) {
+		console.log(buffer);
+		let data = new Uint8Array(buffer);
+		console.log(data);
+		const pInput = instance.exports.malloc(data.length);
+		const view = new Uint8Array(memory.buffer);
+		encode(view, pInput, data);
+		console.log(view);
+		return pInput
+	}
+
+	function notifyWasm(pointer) {
+		instance.exports.on_get(pointer);
+	}
 
 	const returnCode = instance.exports.main();
 	console.log("Return code:", returnCode);
@@ -50,12 +64,11 @@ function printToElem(value, selector) {
 	result.textContent = value;
 }
 
-function encode(memory, base, string) {
-	for (let i = 0; i < string.length; i++) {
-		memory[base + i] = string.charCodeAt(i);
+function encode(memory, base, data) {
+	for (let i = 0; i < data.length; i++) {
+		memory[base + i] = data[i];
 	}
-
-	memory[base + string.length] = 0;
+	memory[base + data.length] = 0;
 };
 
 function decode(memory, base) {
