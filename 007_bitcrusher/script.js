@@ -57,14 +57,12 @@ async function init() {
 	document.getElementById("button").addEventListener("click", (event) => {
 		const buffer = audioBuffer.getChannelData(0);
 		console.log(buffer);
-		const data_len = 10000;
+		const data_len = buffer.length;
 		const ptr = instance.exports.malloc(data_len * Float32Array.BYTES_PER_ELEMENT);
 		const view = new Float32Array(memory.buffer);
 		console.log("memory len", view.length);
 		console.log("data len", data_len * Float32Array.BYTES_PER_ELEMENT);
 		console.log("pointer", ptr);
-		let sli = buffer.slice(0, data_len);
-		view.set(sli, ptr);
 		moveSoundToMemory(view, ptr, buffer.slice(0, data_len));
 		console.log('Data in WASM memory:', new Float32Array(view.buffer, ptr, data_len));
 		instance.exports.apply_bitcrusher(ptr, data_len, 8, 4);
