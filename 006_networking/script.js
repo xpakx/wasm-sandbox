@@ -18,6 +18,15 @@ async function init() {
 		.then(pointer => notifyWasm(pointer))
                 .catch(error => console.error('Error fetching data:', error));
 	}
+	io_wasm.post = function(pointer) {
+		const view = new Uint8Array(memory.buffer);
+		const data = decode(view, pointer);
+		fetch('http://localhost:8001', { 'method' : 'POST', body: data })
+                .then(response => response.arrayBuffer())
+		.then(data => saveData(data))
+		.then(pointer => notifyWasmPost(pointer))
+                .catch(error => console.error('Error fetching data:', error));
+	}
 	io_wasm.sleep = function sleep(ms) {
 		console.log(ms);
 		new Promise(resolve => setTimeout(resolve, ms))
@@ -42,14 +51,16 @@ async function init() {
 		instance.exports.click_sleep();
 	});
 
+	document.getElementById("post").addEventListener("click", () => {
+		instance.exports.click_post();
+	});
+
 	function saveData(buffer) {
-		console.log(buffer);
 		let data = new Uint8Array(buffer);
 		console.log(data);
 		const pInput = instance.exports.malloc(data.length);
 		const view = new Uint8Array(memory.buffer);
 		encode(view, pInput, data);
-		console.log(view);
 		return pInput
 	}
 
@@ -57,6 +68,9 @@ async function init() {
 		instance.exports.on_get(pointer);
 	}
 
+	function notifyWasmPost(pointer) {
+		instance.exports.on_post(pointer);
+	}
 	const returnCode = instance.exports.main();
 	console.log("Return code:", returnCode);
 	if(returnCode != 0) {

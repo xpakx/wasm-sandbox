@@ -17,6 +17,9 @@ void js_jsprintf(char* str);
 __attribute__((import_module("io_wasm"), import_name("get"))) 
 void js_get();
 
+__attribute__((import_module("io_wasm"), import_name("post"))) 
+void js_post(char* str);
+
 __attribute__((import_module("io_wasm"), import_name("sleep"))) 
 void js_sleep(int ms);
 
@@ -53,3 +56,16 @@ void click_sleep() {
 void on_sleep_ended() {
 	jsprintf("Message from on_sleep_ended(): after sleep");
 }
+
+
+void click_post() {
+	jsprintf("Message from click_post(): Button clicked.");
+	char *argument = "WASM";
+	js_post(argument);
+}
+
+void on_post(char* ptr) {
+	jsprintf("Message from on_post(): %s", ptr);
+	free(ptr);
+}
+
