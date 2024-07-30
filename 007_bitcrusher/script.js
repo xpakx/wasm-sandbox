@@ -68,14 +68,33 @@ async function init() {
 		moveSoundToMemory(view, ptr, buffer.slice(0, data_len));
 		console.log('Data in WASM memory:', new Float32Array(view.buffer, ptr, data_len));
 		instance.exports.apply_bitcrusher(ptr, data_len, 8, 4);
-		const result = new Float32Array(memory.buffer);
-		var newView = getSoundFromMemory(result, ptr, data_len);
+		var newView = getSoundFromMemory(memory, ptr, data_len);
 		console.log('Data in WASM memory:', new Float32Array(view.buffer, ptr, data_len));
 		console.log(newView.length);
 		audioDataCrushed = new Float32Array(newView);
 		console.log(newView);
 		instance.exports.free(ptr);
 	});
+
+	document.getElementById('playCrushed').addEventListener('click', function() {
+		const audioPlayer = document.getElementById('audioPlayer');
+		audioPlayer.pause();
+
+		const sampleRate = originalRate;
+
+		context.close();
+		context = new window.AudioContext;
+
+		const audioBuffer = context.createBuffer(1, audioDataCrushed.length, sampleRate);
+		audioBuffer.getChannelData(0).set(audioDataCrushed);
+
+		const source = context.createBufferSource();
+		source.buffer = audioBuffer;
+
+		source.connect(context.destination);
+		source.start();
+	});
+
 }
 
 function printToElem(value, selector) {
