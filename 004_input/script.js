@@ -2,7 +2,6 @@ let wasi = {};
 
 // https://wasix.org/docs/api-reference/wasi/args_get
 wasi.fd_close = function() { };
-wasi.fd_fdstat_get = function() { };
 wasi.fd_seek = function() { };
 wasi.fd_write = function() { };
 

@@ -1,9 +1,7 @@
-#include <string.h>
 #include <stdlib.h>
 
 #include <stdarg.h>
 #include <stdio.h>
-
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -37,7 +35,7 @@ void make_gradient() {
 	pixel_data = (uint8_t*)malloc(WIDTH * HEIGHT * 4);
 
 	if (pixel_data == NULL) {
-		printf("Memory allocation failed!\n");
+		jsprintf("Memory allocation failed!\n");
 		return;
 	}
 
