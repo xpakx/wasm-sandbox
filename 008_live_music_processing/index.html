@@ -142,6 +142,52 @@ button:active {
 #audioFileInput {
 	display: none;
 }
+
+.potentiometer {
+	position: relative;
+	width: 200px;
+}
+
+input[type=range] {
+	background-color: var(--button-bg-color);
+	border-radius: 5px;
+	width: 100%;
+	height: 8px;
+	border-radius: 5px;
+	outline: none;
+	opacity: 0.7;
+	transition: opacity 0.2s;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: background 0.2s;
+	border-color: var(--button-bg-color);
+	background-color: #181825;
+}
+
+input[type=range]::-moz-range-thumb {
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: background 0.2s;
+	border-color: var(--button-bg-color);
+	background-color: #181825;
+}
+
+input[type=range]:hover {
+	opacity: 1;
+}
+
+.switch {
+	text-align: center;
+}
 </style>
 </head>
 <body>
@@ -165,7 +211,15 @@ button:active {
 		</div>
 		<div class="tags">
 			<button id="getFile">load</button>
-			<button id="button" disabled>bitcrushing</button>
+			<button id="bit-crusher-button">bitcrushing</button>
+			<div class="potentiometer">
+				<label>bit depth</label>
+				<input type="range" min="1" max="30" value="4" id="bit-depth-slider">
+			</div>
+			<div class="potentiometer">
+				<label>rate reduction</label>
+				<input type="range" min="1" max="50" value="8" id="rate-reduction-slider">
+			</div>
 		</div>
 	</div>
 

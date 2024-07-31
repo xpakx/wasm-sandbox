@@ -9,6 +9,9 @@ class WASMAudioProcessor extends AudioWorkletProcessor {
         ptr = undefined;
 	instance = undefined;
 	memory = new WebAssembly.Memory({ initial: 50 });
+	active = true;
+	bitDepth = 8;
+	rateReduction = 4;
 
 	constructor() {
 		super();
@@ -31,9 +34,13 @@ class WASMAudioProcessor extends AudioWorkletProcessor {
 		// future proof this
 
 		for (let channel = 0; channel < output.length; ++channel) {
+			if(!this.active) {
+				output[channel].set(input[channel]);
+				continue;
+			}
 			const view = new Float32Array(this.memory.buffer);
 			this.moveSoundToMemory(view, this.ptr, input[channel]);
-			this.instance.exports.apply_bitcrusher(this.ptr, data_len, 8, 50);
+			this.instance.exports.apply_bitcrusher(this.ptr, data_len, this.bitDepth, this.rateReduction);
 			var out = this.getSoundFromMemory(this.memory, this.ptr, data_len);
 			output[channel].set(out);
 		}
@@ -52,8 +59,16 @@ class WASMAudioProcessor extends AudioWorkletProcessor {
 		}
 		if(msg.type == "wasm") {
 			this.initWasm(msg.wasm);
+		} else if(msg.type == "depth") {
+			this.bitDepth = msg.value;
+		} else if(msg.type == "reduction") {
+			this.rateReduction = msg.value;
+		} else if(msg.type == "active") {
+			this.active = msg.value;
+		} else {
+			this.sendMsg("msg", "pong");
 		}
-		this.sendMsg("msg", "pong");
+		console.log(this.active, this.bitDepth, this.rateReduction);
 	}
 
 	async initWasm(wasm) {

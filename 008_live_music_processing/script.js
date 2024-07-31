@@ -66,7 +66,12 @@ function preparePlayer() {
 	const currentTimeElem = document.getElementById('current-time');
 	const durationElem = document.getElementById('duration');
 
+	const bitSlider = document.getElementById('bit-depth-slider');
+	const rateSlider = document.getElementById('rate-reduction-slider');
+	const bitButton = document.getElementById('bit-crusher-button');
+
 	var isPlaying = false;
+	var activeEffect = true;
 
 	playPauseBtn.addEventListener('click', () => {
 		if (isPlaying) {
@@ -74,6 +79,29 @@ function preparePlayer() {
 		} else {
 			audio.play();
 		}
+	});
+
+	bitButton.addEventListener('click', () => {
+		if(!workletNode) {
+			return;
+		}
+		activeEffect = !activeEffect;
+		workletNode.port.postMessage({type: "active", value: activeEffect});
+	});
+
+	bitSlider.addEventListener('input', (event) => {
+		console.log(`Slider value: ${event.target.value}`);
+		if(!workletNode) {
+			return;
+		}
+		workletNode.port.postMessage({type: "depth", value: Number(event.target.value)});
+	});
+	rateSlider.addEventListener('input', (event) => {
+		console.log(`Slider value: ${event.target.value}`);
+		if(!workletNode) {
+			return;
+		}
+		workletNode.port.postMessage({type: "reduction", value: Number(event.target.value)});
 	});
 
 	fileBtn.addEventListener('click', () => {
