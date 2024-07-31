@@ -7,6 +7,10 @@
 
 #define WIDTH 640
 #define HEIGHT 480
+#define LEFT 0
+#define RIGHT 1
+#define UP 2
+#define DOWN 3
 
 __attribute__((import_module("io_wasm"), import_name("jsprintf"))) 
 void js_jsprintf(char* str);
@@ -26,10 +30,12 @@ void jsprintf(const char* format, ...) {
 struct GameState {
   int xPos;
   int yPos;
+  int speedX;
+  int speedY;
 };
 
 struct GameState state;
-int color = 0x00FF00FF;
+int color = 0xF0F000FF;
 
 uint8_t* pixel_data;
 
@@ -60,6 +66,18 @@ void draw(uint8_t* buffer) {
 }
 
 void update() {
+	state.xPos += state.speedX;
+	state.yPos += state.speedY;
+	int size = 100;
+
+	if (state.xPos < 0 || state.xPos > WIDTH - size) {
+		state.speedX = 0;
+		state.xPos = state.xPos < 0 ? 0 : WIDTH - size;
+	}
+	if (state.yPos < 0 || state.yPos > HEIGHT - size) {
+		state.speedY = 0;
+		state.yPos = state.yPos < 0 ? 0 : HEIGHT - size;
+	}
 }
 
 void tick() {
@@ -99,3 +117,20 @@ int set_state(int x, int y) {
 	state.yPos = y*1.0;
 }
 #endif
+
+void keyboard_action(uint8_t keyCode, int pressed) {
+	switch (keyCode) {
+		case LEFT:
+			state.speedX = pressed == 0 ? 0 : -1;
+			break;
+		case RIGHT:
+			state.speedX = pressed == 0 ? 0 : 1;
+			break;
+		case UP:
+			state.speedY = pressed == 0 ? 0 : -1;
+			break;
+		case DOWN:
+			state.speedY = pressed == 0 ? 0 : 1;
+			break;
+	}
+}

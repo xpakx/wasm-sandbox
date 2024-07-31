@@ -1,4 +1,4 @@
-EXPORTS = -Wl,--export=init -Wl,--export=tick
+EXPORTS = -Wl,--export=init -Wl,--export=tick -Wl,--export=keyboard_action
 ifdef DEV
     EXPORTS += -Wl,--export=get_state -Wl,--export=set_state
 endif

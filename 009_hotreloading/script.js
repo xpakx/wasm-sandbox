@@ -45,6 +45,40 @@ async function init() {
 		return;
 	}
 
+	document.addEventListener('keydown', function(event) {
+		switch (event.key) {
+			case 'ArrowLeft': case 'h':
+				globalInstance.exports.keyboard_action(0, 1);
+			break;
+			case 'ArrowRight': case 'l':
+				globalInstance.exports.keyboard_action(1, 1);
+			break;
+			case 'ArrowUp': case 'k':
+				globalInstance.exports.keyboard_action(2, 1);
+			break;
+			case 'ArrowDown': case 'j':
+				globalInstance.exports.keyboard_action(3, 1);
+			break;
+		}
+	});
+
+	document.addEventListener('keyup', function(event) {
+		switch (event.key) {
+			case 'ArrowLeft': case 'h':
+				globalInstance.exports.keyboard_action(0, 0);
+			break;
+			case 'ArrowRight': case 'l':
+				globalInstance.exports.keyboard_action(1, 0);
+			break;
+			case 'ArrowUp': case 'k':
+				globalInstance.exports.keyboard_action(2, 0);
+			break;
+			case 'ArrowDown': case 'j':
+				globalInstance.exports.keyboard_action(3, 0);
+			break;
+		}
+	});
+
 	function render() {
 		globalInstance.exports.tick();
 		window.requestAnimationFrame(render);
