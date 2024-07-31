@@ -3,10 +3,12 @@ window.onload = () => {
 	init();
 }
 
+let audioContext = undefined;
+let workletNode = undefined;
+
 async function init() {
 
 	const compiledWasm = await WebAssembly.compileStreaming(fetch('./web.wasm'));
-	var audioContext = undefined;
 
 	document.getElementById('audioFileInput').addEventListener('change', async function(event) {
 		const file = event.target.files[0];
@@ -17,15 +19,17 @@ async function init() {
 			audioPlayer.play();
 
 			if(!audioContext) {
-				let audioContext = new AudioContext();
-				let processor = await createAudioProcessor(audioContext);
-				processor.port.onmessage = (e) => console.log(e.data);
-				processor.port.postMessage({type: "wasm", wasm: compiledWasm});
+				audioContext = new AudioContext();
+				workletNode = await createAudioProcessor(audioContext);
+				workletNode.port.onmessage = (e) => console.log(e.data);
+				workletNode.port.postMessage({type: "wasm", wasm: compiledWasm});
+				const sourceNode = audioContext.createMediaElementSource(audioPlayer);
+				sourceNode.connect(workletNode);
+				workletNode.connect(audioContext.destination);
 			}
 		}
 	});
 
-	// TODO: pass sound to AudioWorkletNode
 	// TODO: add interface to change bitcrusher's arguments
 }
 

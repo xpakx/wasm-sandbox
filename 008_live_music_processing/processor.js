@@ -13,8 +13,18 @@ class WASMAudioProcessor extends AudioWorkletProcessor {
 		this.port.onmessage = (e) => this.processMessage(e.data);
 	}
 
-	process(_inputs, _outputs, _parameters) {
+	process(inputs, outputs, _parameters) {
+		const input = inputs[0];
+		const output = outputs[0];
+		if(!input[0] || !output[0]) {
+			return false;
+		}
+
+		for (let channel = 0; channel < output.length; ++channel) {
+			output[channel].set(input[channel]);
+		}
 		return true;
+
 	}
 
 	sendMsg(type, msg) {
