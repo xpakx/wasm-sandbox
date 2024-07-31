@@ -38,6 +38,8 @@ async function init() {
 			if(!audioContext) {
 				let audioContext = new AudioContext();
 				let processor = await createAudioProcessor(audioContext);
+				processor.port.onmessage = (e) => console.log(e.data);
+				processor.port.postMessage("ping");
 			}
 		}
 	});
