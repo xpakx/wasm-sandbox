@@ -14,6 +14,7 @@ window.onload = () => {
 	canvas.width = 640;
 	canvas.height = 480;
 	init();
+	setUpWs();
 }
 
 async function init() {
@@ -75,3 +76,25 @@ function decode(memory, base) {
 
 	return result;
 };
+
+
+function setUpWs() {
+	const url = 'ws://localhost:8765';
+	const socket = new WebSocket(url);
+	socket.addEventListener('open', () => {
+		console.log('Connected to HotReload server');
+	});
+
+	socket.addEventListener('message', (event) => {
+		const message = event.data;
+		console.log('Message from HotReload server:', message);
+	});
+
+	socket.addEventListener('close', () => {
+		console.log('Disconnected from HotReload server');
+	});
+
+	socket.addEventListener('error', (error) => {
+		console.error('HotReload server error:', error);
+	});
+}

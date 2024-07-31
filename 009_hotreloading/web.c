@@ -78,3 +78,13 @@ int init() {
 	state.yPos = 100;
 	return 0;
 }
+
+#ifdef DEVELOPMENT
+void get_state() {
+	jsprintf("Getting state…");
+}
+
+void set_state() {
+	jsprintf("Setting state…");
+}
+#endif
