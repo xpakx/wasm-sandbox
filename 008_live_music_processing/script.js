@@ -25,20 +25,42 @@ async function init() {
 		{ env: { memory }, wasi_snapshot_preview1: wasi, io_wasm: io_wasm }
 	);
 
-	document.getElementById('audioFileInput').addEventListener('change', function(event) {
+	var audioContext = undefined;
+
+	document.getElementById('audioFileInput').addEventListener('change', async function(event) {
 		const file = event.target.files[0];
 		if (file) {
 			const audioPlayer = document.getElementById('audioPlayer');
 			const fileURL = URL.createObjectURL(file);
 			audioPlayer.src = fileURL;
 			audioPlayer.play();
+
+			if(!audioContext) {
+				let audioContext = new AudioContext();
+				let processor = await createAudioProcessor(audioContext);
+			}
 		}
 	});
 
-	// TODO: create an AudioWorkletNode
 	// TODO: pass wasm module to AudioWorkletNode
 	// TODO: pass sound to AudioWorkletNode
 	// TODO: add interface to change bitcrusher's arguments
+}
+
+
+async function createAudioProcessor(audioContext) {
+	if (!audioContext) {
+		return;
+	}
+	try {
+		await audioContext.resume();
+		await audioContext.audioWorklet.addModule("./processor.js");
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
+
+	return new AudioWorkletNode(audioContext, "wasm-processor");
 }
 
 function printToElem(value, selector) {
