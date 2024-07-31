@@ -29,6 +29,7 @@ struct GameState {
 };
 
 struct GameState state;
+int color = 0x00FF00FF;
 
 uint8_t* pixel_data;
 
@@ -53,7 +54,7 @@ void draw(uint8_t* buffer) {
 	for (int y = state.yPos; y < state.yPos + 100; y++) {
 		for (int x = state.xPos; x < state.xPos + 100; x++) {
 			int index = (y * WIDTH + x) * 4;
-			fillPixel(buffer, index, 0xFF0000FF);
+			fillPixel(buffer, index, color);
 		}
 	}
 }
@@ -80,11 +81,21 @@ int init() {
 }
 
 #ifdef DEVELOPMENT
-void get_state() {
-	jsprintf("Getting state…");
+int get_state() {
+	jsprintf("Getting state");
+	int x = floor(state.xPos);
+	int y = floor(state.yPos);
+	return (((x + y) * (x + y + 1)) / 2) + y; // TODO: would be better to pass struct, but i'll use cantor pairing function for now
 }
 
-void set_state() {
-	jsprintf("Setting state…");
+int set_state(int x, int y) {
+	jsprintf("Setting state (%d, %d)", x, y);
+	pixel_data = (uint8_t*)malloc(WIDTH * HEIGHT * 4);
+	if(pixel_data == NULL) {
+		jsprintf("Couldn't allocate canvas.");
+		return 1;
+	}
+	state.xPos = x*1.0;
+	state.yPos = y*1.0;
 }
 #endif
