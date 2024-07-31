@@ -1,30 +1,11 @@
-let wasi = {};
-
-// https://wasix.org/docs/api-reference/wasi/args_get
-wasi.fd_close = function() { };
-wasi.fd_seek = function() { };
-wasi.fd_write = function() { };
-
 window.onload = () => {
 	preparePlayer();
 	init();
 }
 
 async function init() {
-	const memory = new WebAssembly.Memory({ initial: 50 });
-	let io_wasm = {};
-	io_wasm.jsprintf = function(base) {
-		const view = new Uint8Array(memory.buffer);
-		const text = decode(view, base);
-		console.log(text);
-		printToElem(text, "#result");
-	}
 
-	const { instance } = await WebAssembly.instantiateStreaming(
-		fetch("./web.wasm"),
-		{ env: { memory }, wasi_snapshot_preview1: wasi, io_wasm: io_wasm }
-	);
-
+	const compiledWasm = await WebAssembly.compileStreaming(fetch('./web.wasm'));
 	var audioContext = undefined;
 
 	document.getElementById('audioFileInput').addEventListener('change', async function(event) {
@@ -39,12 +20,11 @@ async function init() {
 				let audioContext = new AudioContext();
 				let processor = await createAudioProcessor(audioContext);
 				processor.port.onmessage = (e) => console.log(e.data);
-				processor.port.postMessage("ping");
+				processor.port.postMessage({type: "wasm", wasm: compiledWasm});
 			}
 		}
 	});
 
-	// TODO: pass wasm module to AudioWorkletNode
 	// TODO: pass sound to AudioWorkletNode
 	// TODO: add interface to change bitcrusher's arguments
 }
@@ -71,25 +51,6 @@ function printToElem(value, selector) {
 		return;
 	}
 	result.textContent = value;
-}
-
-function moveSoundToMemory(memory, base, data) {
-	memory.set(data, base / Float32Array.BYTES_PER_ELEMENT);
-};
-
-function decode(memory, base) {
-	let cursor = base;
-	let result = '';
-
-	while (memory[cursor] !== 0) {
-		result += String.fromCharCode(memory[cursor++]);
-	}
-
-	return result;
-};
-
-function getSoundFromMemory(memory, base, data_len) {
-    return new Float32Array(memory.buffer, base, data_len);
 }
 
 function preparePlayer() {
