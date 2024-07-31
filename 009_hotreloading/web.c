@@ -35,7 +35,7 @@ struct GameState {
 };
 
 struct GameState state;
-int color = 0xF0F000FF;
+int color = 0x00F0F0FF;
 
 uint8_t* pixel_data;
 
@@ -55,21 +55,44 @@ void clearScreen(uint8_t* buffer) {
 	}
 }
 
-void draw(uint8_t* buffer) {
-	clearScreen(buffer);
-	for (int y = state.yPos; y < state.yPos + 100; y++) {
-		for (int x = state.xPos; x < state.xPos + 100; x++) {
+void draw_square(uint8_t* buffer, int xPos, int yPos, int size, int color) {
+	for (int y = yPos; y < yPos + size; y++) {
+		for (int x = xPos; x < xPos + size; x++) {
 			int index = (y * WIDTH + x) * 4;
 			fillPixel(buffer, index, color);
 		}
 	}
 }
 
+void draw_circle(uint8_t* buffer, int xPos, int yPos, int size, int color) {
+	int x0 = xPos+(int)(size/2);
+	int y0 = yPos+(int)(size/2);
+	int r = (int)(size/2);
+
+	for (int y = -r; y <= r; ++y) {
+		for (int x = -r; x <= r; ++x) {
+			if (x*x + y*y <= r*r) {
+				int px = x0 + x;
+				int py = y0 + y;
+
+				if (px >= 0 && px < WIDTH && py >= 0 && py < HEIGHT) {
+					int index = (py * WIDTH + px) * 4;
+					fillPixel(buffer, index, color);
+				}
+			}
+		}
+	}
+}
+
+void draw(uint8_t* buffer) {
+	clearScreen(buffer);
+	draw_square(buffer, state.xPos, state.yPos, 100, color);
+}
+
 void update() {
 	state.xPos += state.speedX;
 	state.yPos += state.speedY;
 	int size = 100;
-
 	if (state.xPos < 0 || state.xPos > WIDTH - size) {
 		state.speedX = 0;
 		state.xPos = state.xPos < 0 ? 0 : WIDTH - size;
